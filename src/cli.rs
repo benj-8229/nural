@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand, builder::styling};
 
 const ABOUT: &str = "Minimal, fast, context aware note taking tool";
-const INIT_LONG_ABOUT: &str = "Initialize a new note context\n\nBy default, commands are scoped only to the current context and the \"universal context\" that can be added to with the global flag.";
+const INIT_LONG_ABOUT: &str = "Initialize a new note context\n\nBy default, commands are scoped only to the current context, with the \"global context\" being accessible using the global flag";
 const CREATE_LONG_ABOUT: &str = "Create a new note\nWhen executed with the global flag, this will create a note that can be accessed from any context\nAliases: c, cr, create";
 const DELETE_LONG_ABOUT: &str = "Delete a note\nWhen executed with the global flag this can delete notes from any context\nWill ask for confirmation before deleting\nAliases: d, del, delete";
 const APPEND_LONG_ABOUT: &str = "Append some text to the end of a note\nWhen executed with the global flag this can append to notes from any context\nWill prompt to create a new note if no note matches filters\nAliases: a, ap, append";
@@ -38,27 +38,28 @@ const STYLES: styling::Styles = styling::Styles::styled()
     .invalid(styling::AnsiColor::BrightRed.on_default().bold());
 
 #[derive(Parser)]
-#[command(after_help="Thank you for trying out Nural!", disable_colored_help=false, flatten_help=true)]
+#[command(after_help="Thank you for trying out Nural!", disable_colored_help=false, 
+    flatten_help=false)]
 #[command(styles=STYLES, version, about=ABOUT)]
-struct CliEntry {
+pub struct CliEntry {
     /// Execute with access to all project contexts
     #[arg(short, long)]
-    global: bool,
+    pub global: bool,
 
     #[command(subcommand)]
-    subcommand: Commands,
+    pub subcommand: Commands,
 }
 
 #[derive(Subcommand)]
-enum Commands {
+pub enum Commands {
     /// Initialize a new project context 
     #[command(disable_help_flag=false, long_about=INIT_LONG_ABOUT)]
     Init {
         /// Initialize project context in same directory as repository root. Will backtrack to find repository.
-        #[arg(short, long="use-git")]
+        #[arg(required=false, short, long="use-git")]
         git: bool,
 
-        /// Directory to initialize context in
+        /// Directory to initialize context in. Defaults to CWD
         #[arg(required=false)]
         directory: Option<String>,
     },
@@ -68,7 +69,7 @@ enum Commands {
     Create {
         /// The name of the note to create
         #[arg(required=true)]
-        note: String,
+        name: String,
 
         /// Comma seperated list of tags to apply to note
         #[arg(required=false, short, long)]
@@ -94,28 +95,28 @@ enum Commands {
     /// Append some text to the end note 
     #[command(hide=false, disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
     Append {
-        /// The text to be appended to the note
-        #[arg(required=true)]
-        text: String,
-
-        /// Search for note to append to by name
-        #[arg(long, short, default_value="most recently used note", required=false)]
-        name: Option<String>,
-
         /// Search for note to append to by tag
         #[arg(long, short, required=false)]
         tag: Option<String>,
 
         /// Use filtering syntax to select note [see nural help filter]
-        #[arg(long, short, required=false)]
+        #[arg(long, short, conflicts_with="name", required=false)]
         filters: Option<String>,
+
+        /// Search for note to append to by name
+        #[arg(long, short, required=false)]
+        name: Option<String>,
+
+        /// The text to be appended to the note
+        #[arg(required=true)]
+        text: String,
     },
 
     /// Edit a note
     #[command(disable_help_flag=false, long_about=EDIT_LONG_ABOUT, aliases=["e", "ed"])]
     Edit {
         /// Search for note to delete by name
-        #[arg(long, short, default_value="most recently used note", required=false)]
+        #[arg(required=false)]
         name: Option<String>,
 
         /// Search for note to delete by tag 
@@ -141,6 +142,6 @@ enum Commands {
     },
 }
 
-pub fn parse_cli() {
-    let _cli = CliEntry::parse();
+pub fn parse_cli() -> CliEntry {
+    CliEntry::parse()
 }
