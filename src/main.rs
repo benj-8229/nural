@@ -2,14 +2,17 @@ mod cli;
 mod config;
 mod config_serialize;
 mod commands;
+mod fuzzy;
 
+use std::io::{Error, ErrorKind};
 use config::Config;
 use cli::{parse_cli, Commands};
 use commands::ICommand;
 
 fn main() {
     let cli = parse_cli();
-
+    
+    // Auto generate config directory and config file if it doesn't exist
     let config = Config::default();
     if !config.dir_exists() {
         match config.create_dir() {
@@ -25,8 +28,15 @@ fn main() {
     }
 
     let config = config.get_config();
-    match cli.subcommand {
-        Commands::Init { .. } =>  { let _ = commands::init::InitCommand::execute(config, cli); },
-        _ => {},
-    }
+    let result = match cli.subcommand {
+        Commands::Init { .. } => commands::init::InitCommand::execute(config, cli),
+        Commands::Create { .. } => commands::create::CreateCommand::execute(config, cli),
+        Commands::Append { .. } => commands::append::AppendCommand::execute(config, cli),
+        _ => Ok(()),
+    };
+    
+    match result {
+        Ok(_) => {},
+        Err(e) => { println!("{}", e.to_string()); },
+    };
 }

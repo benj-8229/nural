@@ -86,10 +86,6 @@ pub enum Commands {
         /// Search for note to delete by tag 
         #[arg(long, short, required=false)]
         tag: Option<String>,
-
-        /// Use filtering syntax to select note [see nural help filter]
-        #[arg(long, short, required=false)]
-        filters: Option<String>,
     },
 
     /// Append some text to the end note 
@@ -98,10 +94,6 @@ pub enum Commands {
         /// Search for note to append to by tag
         #[arg(long, short, required=false)]
         tag: Option<String>,
-
-        /// Use filtering syntax to select note [see nural help filter]
-        #[arg(long, short, conflicts_with="name", required=false)]
-        filters: Option<String>,
 
         /// Search for note to append to by name
         #[arg(long, short, required=false)]
@@ -122,18 +114,14 @@ pub enum Commands {
         /// Search for note to delete by tag 
         #[arg(long, short, required=false)]
         tag: Option<String>,
-
-        /// Use filtering syntax to select note [see nural help filter]
-        #[arg(long, short, required=false)]
-        filters: Option<String>,
     },
 
     /// List notes from available context
     #[command(disable_help_flag=false, long_about=LIST_LONG_ABOUT, aliases=["l", "ls"])]
     List {
-        /// Use filtering syntax to select notes to list [see nural help filter]
-        #[arg(long, short, required=false)]
-        filters: Option<String>,
+        /// Filter notes to list by name
+        #[arg(required=false)]
+        name: Option<String>,
     },
 
     //#[command(hide=true, override_usage="space seperated list of filters following the -f/--filters flag", disable_help_flag=true)]
