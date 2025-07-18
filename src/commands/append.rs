@@ -30,8 +30,12 @@ impl ICommand for AppendCommand {
                 file_list.push(file.unwrap().path());
             }
             
-            let result = note_query::query_tui(file_list, note_name.unwrap_or(String::from("")));
-            println!("{:?}", result);
+            match note_query::query_tui(file_list, note_name.unwrap_or(String::from(""))) {
+                Ok(res) => {
+                    println!("{:?}", res);
+                }
+                Err(e) => {return Err(e);}
+            }
         }
 
         Ok(())

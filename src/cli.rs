@@ -100,8 +100,8 @@ pub enum Commands {
         name: Option<String>,
 
         /// The text to be appended to the note
-        #[arg(required=false)]
-        text: Option<String>,
+        #[arg(required=true)]
+        text: String,
     },
 
     /// Edit a note
