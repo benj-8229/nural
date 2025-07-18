@@ -2,7 +2,7 @@ mod cli;
 mod config;
 mod config_serialize;
 mod commands;
-mod fuzzy;
+mod note_query;
 
 use std::io::{Error, ErrorKind};
 use config::Config;

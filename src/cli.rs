@@ -71,7 +71,7 @@ pub enum Commands {
         #[arg(required=true)]
         name: String,
 
-        /// Comma seperated list of tags to apply to note
+        /// Comma seperated list of tags to apply to note (unused)
         #[arg(required=false, short, long)]
         tag: Option<String>,
     },
@@ -83,7 +83,7 @@ pub enum Commands {
         #[arg(long, short, required=false)]
         name: Option<String>,
 
-        /// Search for note to delete by tag 
+        /// Search for note to delete by tag (unused)
         #[arg(long, short, required=false)]
         tag: Option<String>,
     },
@@ -91,7 +91,7 @@ pub enum Commands {
     /// Append some text to the end note 
     #[command(hide=false, disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
     Append {
-        /// Search for note to append to by tag
+        /// Search for note to append to by tag (unused)
         #[arg(long, short, required=false)]
         tag: Option<String>,
 
@@ -100,8 +100,8 @@ pub enum Commands {
         name: Option<String>,
 
         /// The text to be appended to the note
-        #[arg(required=true)]
-        text: String,
+        #[arg(required=false)]
+        text: Option<String>,
     },
 
     /// Edit a note
@@ -111,7 +111,7 @@ pub enum Commands {
         #[arg(required=false)]
         name: Option<String>,
 
-        /// Search for note to delete by tag 
+        /// Search for note to delete by tag (unused)
         #[arg(long, short, required=false)]
         tag: Option<String>,
     },
