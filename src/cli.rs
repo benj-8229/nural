@@ -70,10 +70,6 @@ pub enum Commands {
         /// The name of the note to create
         #[arg(required=true)]
         name: String,
-
-        /// Comma seperated list of tags to apply to note (unused)
-        #[arg(required=false, short, long)]
-        tag: Option<String>,
     },
 
     /// Delete a note 
@@ -82,18 +78,19 @@ pub enum Commands {
         /// Search for note to delete by name
         #[arg(long, short, required=false)]
         name: Option<String>,
-
-        /// Search for note to delete by tag (unused)
-        #[arg(long, short, required=false)]
         tag: Option<String>,
     },
 
-    /// Append some text to the end note 
+    /// Append some text to the end of a note 
     #[command(hide=false, disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
     Append {
         /// Search for note to append to by name
         #[arg(long, short, required=false)]
         name: Option<String>,
+
+        /// Create a note and append to it at the same time
+        #[arg(long, short, conflicts_with="name", required=false)]
+        create: Option<String>,
 
         /// The text to be appended to the note
         #[arg(required=true)]

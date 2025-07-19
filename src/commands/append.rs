@@ -1,4 +1,5 @@
 use super::ICommand;
+use std::io::ErrorKind;
 use crate::cli::{CliEntry, Commands};
 use crate::commands::utils;
 use crate::config_serialize::ConfigObj;
@@ -13,7 +14,7 @@ pub struct AppendCommand {
 
 impl ICommand for AppendCommand {
     fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Commands::Append { name: note_name, text: append_text } = cli_obj.subcommand {
+        if let Commands::Append { name, create, text } = cli_obj.subcommand {
             let global_path = PathBuf::from(utils::expand_dir(&conf_obj.general.global_dir));
 
             // return global_path if global=true or if the current directory has no context
@@ -21,6 +22,21 @@ impl ICommand for AppendCommand {
                 true => global_path,
                 false => utils::get_dir_context(&current_dir()?).unwrap_or(global_path),
             };
+
+            match create {
+                Some(create_name) => { 
+                    let mut note_path = context_dir.clone(); 
+                    note_path.push(format!("{}.{}", create_name, conf_obj.general.note_extension));
+
+                    if note_path.exists() {
+                        return Err(Error::new(ErrorKind::AlreadyExists, format!("note with name {} already exists", create_name)));
+                    }
+
+                    std::fs::write(note_path, &text)?;
+                    return Ok(());
+                }
+                None => { }
+            }
             
             let note_path = context_dir.clone(); 
             let mut file_list: Vec<PathBuf> = Vec::new(); 
@@ -30,13 +46,13 @@ impl ICommand for AppendCommand {
                 file_list.push(file.unwrap().path());
             }
             
-            match note_query::query_tui(file_list, note_name.unwrap_or(String::from(""))) {
+            match note_query::query_tui(file_list, name.unwrap_or(String::from(""))) {
                 Ok(res) => {
                     let mut file = std::fs::OpenOptions::new()
                         .write(true)
                         .append(true)
                         .open(res.path)?;
-                    writeln!(file, "{}", append_text)?;
+                    writeln!(file, "{}", text)?;
                 }
                 Err(e) => { return Err(e); }
             }

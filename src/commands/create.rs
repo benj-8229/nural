@@ -11,7 +11,7 @@ pub struct CreateCommand {
 
 impl ICommand for CreateCommand {
     fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Commands::Create { name: note_name, tag: _tag_list } = cli_obj.subcommand {
+        if let Commands::Create { name: note_name, } = cli_obj.subcommand {
             let global_path = PathBuf::from(utils::expand_dir(&conf_obj.general.global_dir));
 
             // return global_path if global=true or if the current directory has no context
