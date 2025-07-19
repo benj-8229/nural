@@ -6,14 +6,14 @@ use crate::note_query;
 use std::fs;
 use std::env::current_dir;
 use std::path::PathBuf;
-use std::io::{Error};
+use std::io::{Error, Write};
 
 pub struct AppendCommand {
 }
 
 impl ICommand for AppendCommand {
     fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Commands::Append { name: note_name, tag: _tags, text: _append_text } = cli_obj.subcommand {
+        if let Commands::Append { name: note_name, text: append_text } = cli_obj.subcommand {
             let global_path = PathBuf::from(utils::expand_dir(&conf_obj.general.global_dir));
 
             // return global_path if global=true or if the current directory has no context
@@ -32,9 +32,13 @@ impl ICommand for AppendCommand {
             
             match note_query::query_tui(file_list, note_name.unwrap_or(String::from(""))) {
                 Ok(res) => {
-                    println!("{:?}", res);
+                    let mut file = std::fs::OpenOptions::new()
+                        .write(true)
+                        .append(true)
+                        .open(res.path)?;
+                    writeln!(file, "{}", append_text)?;
                 }
-                Err(e) => {return Err(e);}
+                Err(e) => { return Err(e); }
             }
         }
 

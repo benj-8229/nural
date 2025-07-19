@@ -91,10 +91,6 @@ pub enum Commands {
     /// Append some text to the end note 
     #[command(hide=false, disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
     Append {
-        /// Search for note to append to by tag (unused)
-        #[arg(long, short, required=false)]
-        tag: Option<String>,
-
         /// Search for note to append to by name
         #[arg(long, short, required=false)]
         name: Option<String>,

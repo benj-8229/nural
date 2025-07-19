@@ -3,17 +3,14 @@ use std::{path::PathBuf};
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 
-use ratatui::widgets::Wrap;
 use ratatui::{
     backend::Backend, 
-    crossterm::event::{self, Event, KeyCode, KeyEventKind}, 
-    layout::{Constraint, Direction, Layout, Rect}, 
-    prelude::CrosstermBackend, 
-    style::{Color, Modifier, Style, Stylize}, 
-    symbols, 
+    crossterm::event::{self, Event, KeyCode},
+    layout::{Constraint, Direction, Layout}, 
+    style::{Color, Modifier, Style}, 
     text::{Line, Span, Text}, 
-    widgets::{Block, Gauge, LineGauge, List, ListItem, Paragraph, Widget, Borders}, 
-    Frame, Terminal, TerminalOptions, Viewport
+    widgets::{Block, Paragraph, Borders}, 
+    Frame, Terminal
 };
 
 
@@ -39,6 +36,22 @@ pub fn query_tui(options: Vec<PathBuf>, input: String) -> Result<QueryResponse, 
     //let mut terminal = ratatui::init_with_options(TerminalOptions {
     //    viewport: Viewport::Inline(options.len() as u16),
     //});
+    
+    // try and match directly to a note before falling back to fuzzy terminal
+    let scores = score_options(options.clone(), input.clone(), None);
+    for result in &scores {
+        if result.filename == input {
+            return Ok(result.clone());
+        } 
+    }
+    let filtered_scores = scores.iter()
+        .filter(|response| response.score > 0)
+        .map(|response| response.to_owned())
+        .collect::<Vec<QueryResponse>>();
+    if filtered_scores.len() == 1 {
+        return Ok(filtered_scores[0].clone());
+    }
+
     let mut terminal = ratatui::init();
     let mut query = FZFQuery::new(input, options);
 
@@ -50,10 +63,10 @@ pub fn query_tui(options: Vec<PathBuf>, input: String) -> Result<QueryResponse, 
 
 #[derive(Debug, Clone)]
 pub struct QueryResponse {
-    path: PathBuf,
-    filename: String,
-    score: i64,
-    matching_indices: Vec<usize>,
+    pub path: PathBuf,
+    pub filename: String,
+    pub score: i64,
+    pub matching_indices: Vec<usize>,
 }
 
 impl QueryResponse {
@@ -156,7 +169,7 @@ impl FZFQuery
         let chunks = Layout::default().direction(Direction::Vertical)
             .constraints([
                 Constraint::Min(0),         
-                Constraint::Length(fzf_opts.len() as u16 + 2),
+                Constraint::Length(styled_opts.len() as u16 + 2),
                 Constraint::Length(3),      // bottom line for input
             ]).split(area_split[0]);
         
@@ -171,7 +184,7 @@ impl FZFQuery
         frame.render_widget(para, chunks[2]);
 
         let opt_lines = Text::from(styled_opts);
-        let opt_paragraph = Paragraph::new(opt_lines).block(Block::default().borders(Borders::ALL));
+        let opt_paragraph = Paragraph::new(opt_lines).block(Block::default().borders(Borders::ALL).title_top("Matched Notes"));
         frame.render_widget(opt_paragraph, chunks[1]);
         
         let mut file_lines: Vec<Line> = vec![];
@@ -194,7 +207,7 @@ impl FZFQuery
         {
             file_lines = vec![Line::from(String::from(""))];
         }
-        let preview_para = Paragraph::new(file_lines).block(Block::default().borders(Borders::ALL));
+        let preview_para = Paragraph::new(file_lines).block(Block::default().borders(Borders::ALL).title_top("File Preview"));
         frame.render_widget(preview_para, file_area[0]);
     }
 }
