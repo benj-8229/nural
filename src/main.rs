@@ -1,12 +1,9 @@
-mod cli;
-mod config;
-mod config_serialize;
 mod commands;
-mod note_query;
+mod util;
+mod models;
 
-use std::io::{Error, ErrorKind};
-use config::Config;
-use cli::{parse_cli, Commands};
+use util::config::Config;
+use util::cli::{parse_cli, Commands};
 use commands::ICommand;
 
 fn main() {
@@ -22,7 +19,7 @@ fn main() {
     }
     if !config.config_exists() {
         match config.regenerate_config() {
-            Ok(()) => println!("Create config file {}", config.path.to_string_lossy()),
+            Ok(()) => println!("Created config file {}", config.path.to_string_lossy()),
             Err(_) => panic!("failed to create config file {}, check write permissions", config.path.to_string_lossy()),
         }
     }

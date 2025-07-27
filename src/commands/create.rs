@@ -1,7 +1,7 @@
 use super::ICommand;
-use crate::cli::{CliEntry, Commands};
+use crate::util::cli::{CliEntry, Commands};
 use crate::commands::utils;
-use crate::config_serialize::ConfigObj;
+use crate::models::config_serialize::ConfigObj;
 use std::env::current_dir;
 use std::path::PathBuf;
 use std::io::{ErrorKind, Error};

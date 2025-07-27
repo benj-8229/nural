@@ -82,31 +82,23 @@ pub enum Commands {
     },
 
     /// Append some text to the end of a note 
-    #[command(hide=false, disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
+    #[command(disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
     Append {
         /// Search for note to append to by name
         #[arg(long, short, required=false)]
         name: Option<String>,
-
-        /// Create a note and append to it at the same time
-        #[arg(long, short, conflicts_with="name", required=false)]
-        create: Option<String>,
 
         /// The text to be appended to the note
         #[arg(required=true)]
         text: String,
     },
 
-    /// Edit a note
+    /// Open a note
     #[command(disable_help_flag=false, long_about=EDIT_LONG_ABOUT, aliases=["e", "ed"])]
-    Edit {
-        /// Search for note to delete by name
+    Open {
+        /// Search for note to open by name
         #[arg(required=false)]
         name: Option<String>,
-
-        /// Search for note to delete by tag (unused)
-        #[arg(long, short, required=false)]
-        tag: Option<String>,
     },
 
     /// List notes from available context

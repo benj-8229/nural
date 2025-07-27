@@ -1,7 +1,7 @@
 use super::ICommand;
-use crate::cli::{CliEntry, Commands};
+use crate::util::cli::{CliEntry, Commands};
 use crate::commands::utils;
-use crate::config_serialize::ConfigObj;
+use crate::models::config_serialize::ConfigObj;
 use std::env::current_dir;
 use std::path::PathBuf;
 use std::io::{ErrorKind, Error};
@@ -26,7 +26,7 @@ impl ICommand for InitCommand {
                 }
             }
 
-            match utils::dir_in_context(&directory, false) {
+            match utils::context_in_dir(&directory, false) {
                 true => { return Err(Error::new(ErrorKind::DirectoryNotEmpty, format!("{} already has context", directory.to_string_lossy()))); },
                 false => {
                     let mut tmp = directory.clone();

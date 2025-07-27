@@ -1,3 +1,4 @@
+use crate::models::{context::Context};
 use std::io::{self, BufRead, Error};
 use std::{path::PathBuf};
 use fuzzy_matcher::skim::SkimMatcherV2;
@@ -30,7 +31,7 @@ pub fn score_options(options: Vec<PathBuf>, query: String, tags: Option<Vec<Stri
     results
 }
 
-pub fn query_tui(options: Vec<PathBuf>, input: String) -> Result<QueryResponse, std::io::Error>
+pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::io::Error>
 {
     // would be cool to have inline frame but it doesn't seem like it can be cleaned up 
     //let mut terminal = ratatui::init_with_options(TerminalOptions {
@@ -38,6 +39,8 @@ pub fn query_tui(options: Vec<PathBuf>, input: String) -> Result<QueryResponse, 
     //});
     
     // try and match directly to a note before falling back to fuzzy terminal
+
+    let options = context.notes.into_iter().map(|note| note.path).collect::<Vec<PathBuf>>();
     let scores = score_options(options.clone(), input.clone(), None);
     for result in &scores {
         if result.filename == input {

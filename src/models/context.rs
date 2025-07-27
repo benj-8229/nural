@@ -1,4 +1,5 @@
-use std::{path::PathBuf};
+use crate::models::note::Note;
+use std::{fs, path::PathBuf};
 use shellexpand::tilde;
 
 
@@ -25,7 +26,7 @@ pub fn context_in_dir(dir: &PathBuf, recurse: bool) -> bool {
     context_in_dir(&tmp, true)
 }
 
-pub fn get_dir_context(dir: &PathBuf) -> Option<PathBuf> {
+pub fn get_dir_context(dir: &PathBuf) -> Option<Context> {
     let mut tmp = dir.clone();
 
     if tmp.iter().count() == 0 {
@@ -34,7 +35,7 @@ pub fn get_dir_context(dir: &PathBuf) -> Option<PathBuf> {
 
     tmp.push(".nural");
     if tmp.exists() {
-        return Some(tmp);
+        return Some(Context::new(tmp));
     }
 
     tmp.pop();
@@ -45,4 +46,26 @@ pub fn get_dir_context(dir: &PathBuf) -> Option<PathBuf> {
 
 pub fn expand_dir(dir: &str) -> String {
     tilde(dir).to_string()
+}
+
+pub struct Context {
+    pub dir: PathBuf,
+    pub notes: Vec<Note>,
+
+}
+
+impl Context {
+    fn new(dir: PathBuf) -> Self {
+        let files = fs::read_dir(&dir).unwrap();
+        let file_list: Vec<PathBuf> = files.map(|file| file.unwrap().path()).collect::<Vec<PathBuf>>();
+        let notes: Vec<Note> = file_list.into_iter()
+            .map(|path| Note::from(String::from(path.file_stem().unwrap().to_string_lossy()), path))
+            .collect::<Vec<Note>>();
+
+
+        Context {
+            dir,
+            notes,
+        }
+    }
 }
