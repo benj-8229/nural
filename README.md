@@ -1,14 +1,13 @@
 # nural
 ![build](https://img.shields.io/crates/v/nural) ![language](https://img.shields.io/badge/language-Rust-orange) ![license](https://img.shields.io/github/license/benj-8229/nural) ![downloads](https://img.shields.io/crates/dv/nural)
 
-------------
-
 **nural** is a fast, minimal, context aware CLI note tool
 
 It's designed to deal with the common pain points of CLI note tools; fatigue remembering note names, cumbersome to use, global note store.
 
 ![demo gif](https://raw.githubusercontent.com/benj-8229/nural/6a1574422f22337010a9c1add36fa21f4375867f/repo/demo.svg)
 
+------------
 
 ## Quickstart
 To set up a note context run `nural init` in your project root.
