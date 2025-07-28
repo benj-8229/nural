@@ -21,7 +21,8 @@ impl ICommand for CreateCommand {
                 return Err(Error::new(ErrorKind::AlreadyExists, format!("note with name {} already exists", note_name)));
             }
 
-            std::fs::write(note_path, "")?
+            std::fs::write(note_path, "")?;
+            println!("created note {}", note_name);
         }
 
         Ok(())
