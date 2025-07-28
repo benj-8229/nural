@@ -2,6 +2,17 @@
 name = "nural"
 version = "0.1.0"
 edition = "2024"
+authors = ["Ben Smith <bensmith8229@gmail.com>"]
+description = "Fast, minimal, context aware CLI note tool"
+license = "GPL-3.0"
+repository = "https://github.com/benj-8229/nural"
+keywords = ["cli", "workflow", "productivity", "notes"]
+categories = ["command-line-utilities"]
+readme = "README.md"
+
+[[bin]]
+name = "nural"
+path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.5.39", features = ["derive"] }
