@@ -22,6 +22,7 @@ impl ICommand for AppendCommand {
                 .append(true)
                 .open(matched_note.path)?;
             writeln!(file, "{}", text)?;
+            println!("appended to {}", matched_note.filename);
         }
 
         Ok(())
