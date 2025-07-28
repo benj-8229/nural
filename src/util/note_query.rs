@@ -5,6 +5,7 @@ use std::{path::PathBuf};
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 
+use ratatui::style::Stylize;
 use ratatui::{
     backend::Backend, 
     crossterm::event::{self, Event, KeyCode, poll, read},
@@ -155,6 +156,8 @@ impl FZFQuery
         let mut fzf_opts: Vec<String> = vec![];
         let mut styled_opts: Vec<Line<'static>> = vec![];
         self.rankings = score_options(self.options.clone(), self.input.clone(), None);
+        self.selected = self.selected.min((self.rankings.len() as u8 - 1).max(0));
+
         for (i, query) in self.rankings.iter().enumerate()
         {
             if query.score > 0 || self.input.clone() == "" {
@@ -192,11 +195,11 @@ impl FZFQuery
         ]);
 
         let text = Text::from(line); // Text from one Line
-        let para = Paragraph::new(text).block(Block::default().borders(Borders::ALL));
+        let para = Paragraph::new(text).block(Block::default().borders(Borders::ALL).border_style(Style::default().light_yellow()));
         frame.render_widget(para, chunks[2]);
 
         let opt_lines = Text::from(styled_opts);
-        let opt_paragraph = Paragraph::new(opt_lines).block(Block::default().borders(Borders::ALL).title_top("Matched Notes"));
+        let opt_paragraph = Paragraph::new(opt_lines).block(Block::default().borders(Borders::ALL).title_top("Matched Notes").border_style(Style::default().light_yellow()));
         frame.render_widget(opt_paragraph, chunks[1]);
         
         let mut file_lines: Vec<Line> = vec![];
@@ -220,7 +223,7 @@ impl FZFQuery
         {
             file_lines = vec![Line::from(String::from(""))];
         }
-        let preview_para = Paragraph::new(file_lines).block(Block::default().borders(Borders::ALL).title_top("File Preview"));
+        let preview_para = Paragraph::new(file_lines).block(Block::default().borders(Borders::ALL).title_top("File Preview").border_style(Style::default().light_yellow()));
         frame.render_widget(preview_para, file_area[0]);
     }
 }
