@@ -156,7 +156,7 @@ impl FZFQuery
         let mut fzf_opts: Vec<String> = vec![];
         let mut styled_opts: Vec<Line<'static>> = vec![];
         self.rankings = score_options(self.options.clone(), self.input.clone(), None);
-        self.selected = self.selected.min((self.rankings.len() as u8 - 1).max(0));
+        self.selected = self.selected.min((self.rankings.len() as u8).saturating_sub(1).max(0));
 
         for (i, query) in self.rankings.iter().enumerate()
         {

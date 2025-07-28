@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand, CommandFactory, builder::styling};
+use clap::{Parser, Subcommand, builder::styling};
 
 const ABOUT: &str = "Minimal, fast, context aware note taking tool";
 const INIT_LONG_ABOUT: &str = "Initialize a new note context\n\nNotes are scoped to the context they're created in, and commands will access the context based off cwd";
@@ -57,13 +57,13 @@ pub enum Commands {
     /// Append text to the end of a note 
     #[command(disable_help_flag=false, long_about=APPEND_LONG_ABOUT, aliases=["a", "ap"])]
     Append {
-        /// Search for note to append to by name
-        #[arg(long, short, required=false)]
-        name: Option<String>,
-
         /// The text to be appended to the note
         #[arg(required=true)]
         text: String,
+
+        /// Search for note to append to by name
+        #[arg(default_value="", required=false)]
+        name: Option<String>,
     },
 
     /// Open a note
