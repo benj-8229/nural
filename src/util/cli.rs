@@ -26,10 +26,10 @@ pub struct CliEntry {
 
 #[derive(Subcommand, Clone)]
 pub enum Commands {
-    /// Initialize a new project context 
+    /// Initialize a new note context 
     #[command(disable_help_flag=false, long_about=INIT_LONG_ABOUT)]
     Init {
-        /// Initialize project context in same directory as repository root. Will backtrack to find repository.
+        /// Initialize note context in same directory as repository root. Will backtrack to find repository.
         #[arg(required=false, short, long="use-git")]
         git: bool,
 
