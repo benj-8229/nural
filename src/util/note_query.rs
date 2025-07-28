@@ -205,7 +205,8 @@ impl FZFQuery
                 Ok(file) => {
                     let bufreader = io::BufReader::new(file).lines();
                     for (i, line) in bufreader.enumerate() {
-                        let lc_span = Span::from((i+1).to_string()).style(Style::default().fg(Color::Gray));
+                        let padded_nums = format!("{: >3}", (i+1).to_string());
+                        let lc_span = Span::from(padded_nums).style(Style::default().fg(Color::Gray));
                         let letter_span = Span::from(line.unwrap_or(String::from("")));
                         file_lines.push(Line::from(vec![lc_span, Span::from(" "), letter_span]));
                     }
