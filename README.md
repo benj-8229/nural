@@ -1,5 +1,7 @@
 # nural
-![build](https://img.shields.io/badge/status-alpha-yellow) ![language](https://img.shields.io/badge/language-Rust-orange) ![license](https://img.shields.io/github/license/benj-8229/nural) ![issues](https://img.shields.io/github/issues/benj-8229/nural)
+![build](https://img.shields.io/crates/v/nural) ![language](https://img.shields.io/badge/language-Rust-orange) ![license](https://img.shields.io/github/license/benj-8229/nural) ![downloads](https://img.shields.io/crates/dv/nural)
+
+------------
 
 **nural** is a fast, minimal, context aware CLI note tool
 
