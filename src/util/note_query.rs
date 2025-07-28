@@ -42,6 +42,9 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
 
     let options = context.notes.into_iter().map(|note| note.path).collect::<Vec<PathBuf>>();
     let scores = score_options(options.clone(), input.clone(), None);
+    if scores.len() == 1 {
+        return Ok(scores[0].to_owned());
+    }
     for result in &scores {
         if result.filename == input {
             return Ok(result.clone());
@@ -51,8 +54,9 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
         .filter(|response| response.score > 0)
         .map(|response| response.to_owned())
         .collect::<Vec<QueryResponse>>();
+    println!("{:?}", filtered_scores);
     if filtered_scores.len() == 1 {
-        return Ok(filtered_scores[0].clone());
+        return Ok(filtered_scores[0].to_owned());
     }
 
     let mut terminal = ratatui::init();
