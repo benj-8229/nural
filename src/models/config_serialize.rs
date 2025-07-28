@@ -11,6 +11,7 @@ pub struct ConfigObjGeneral {
    pub note_extension: String,
    pub editor: String,
    pub reader: String,
+   pub lister: String,
    pub update_gitignore: bool,
 }
 

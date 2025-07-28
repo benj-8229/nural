@@ -36,6 +36,7 @@ fn main() {
         Some(Commands::Open { .. }) => commands::open::OpenCommand::execute(config, cli),
         Some(Commands::Delete { .. }) => commands::delete::DeleteCommand::execute(config, cli),
         Some(Commands::Read { .. }) => commands::read::ReadCommand::execute(config, cli),
+        Some(Commands::List { .. }) => commands::list::ListCommand::execute(config, cli),
         // default to open, eventually could be some type of dashboard
         None => { 
             let fake_cli = util::cli::CliEntry { subcommand: Some(Commands::Open { name: None })};

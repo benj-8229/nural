@@ -82,6 +82,11 @@ pub enum Commands {
         #[arg(required=false)]
         name: Option<String>,
     },
+
+    /// List all notes in the current context 
+    #[command(disable_help_flag=false, long_about=READ_LONG_ABOUT, aliases=["l", "ls"])]
+    List {
+    },
 }
 
 pub fn parse_cli() -> CliEntry {
