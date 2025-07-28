@@ -1,4 +1,5 @@
 use crate::models::{context::Context};
+use std::time::Duration;
 use std::io::{self, BufRead, Error};
 use std::{path::PathBuf};
 use fuzzy_matcher::skim::SkimMatcherV2;
@@ -6,7 +7,7 @@ use fuzzy_matcher::FuzzyMatcher;
 
 use ratatui::{
     backend::Backend, 
-    crossterm::event::{self, Event, KeyCode},
+    crossterm::event::{self, Event, KeyCode, poll, read},
     layout::{Constraint, Direction, Layout}, 
     style::{Color, Modifier, Style}, 
     text::{Line, Span, Text}, 
@@ -112,6 +113,10 @@ impl FZFQuery
             if let Event::Key(key) = event::read()? {
                 match key.code {
                     KeyCode::Esc => {
+                        // flush stdin
+                        while poll(Duration::from_millis(0)).unwrap_or(false) {
+                            let _ = read(); // discard the event
+                        }
                         return Err(Error::new(std::io::ErrorKind::InvalidInput, "user canceled query"));
                     }
                     KeyCode::Enter => {
