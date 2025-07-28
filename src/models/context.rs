@@ -7,7 +7,7 @@ pub fn context_in_dir(dir: &PathBuf, recurse: bool) -> bool {
     let mut tmp = dir.clone();
 
     // popped all directories and found nothing, return false
-    if tmp.iter().count() == 0 {
+    if tmp.iter().count() <= 1 {
         return false;
     }
 
@@ -29,7 +29,7 @@ pub fn context_in_dir(dir: &PathBuf, recurse: bool) -> bool {
 pub fn get_dir_context(dir: &PathBuf) -> Option<Context> {
     let mut tmp = dir.clone();
 
-    if tmp.iter().count() == 0 {
+    if tmp.iter().count() <= 1 {
         return None;
     }
 
