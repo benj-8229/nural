@@ -47,10 +47,10 @@ pub enum Commands {
     },
 
     /// Delete a note 
-    #[command(disable_help_flag=false, long_about=DELETE_LONG_ABOUT, aliases=["d", "del"])]
+    #[command(disable_help_flag=false, long_about=DELETE_LONG_ABOUT, aliases=["d", "de", "del"])]
     Delete {
         /// Search for note to delete by name
-        #[arg(long, short, required=false)]
+        #[arg(required=false)]
         name: Option<String>,
     },
 
