@@ -2,11 +2,12 @@ use clap::{Parser, Subcommand, builder::styling};
 
 const ABOUT: &str = "Minimal, fast, context aware note taking tool";
 const INIT_LONG_ABOUT: &str = "Initialize a new note context\n\nNotes are scoped to the context they're created in, and commands will access the context based off cwd";
-const CREATE_LONG_ABOUT: &str = "Create a new note\nWhen executed with the global flag, this will create a note that can be accessed from any context\nAliases: c, cr, create";
-const DELETE_LONG_ABOUT: &str = "Delete a note\nWhen executed with the global flag this can delete notes from any context\nWill ask for confirmation before deleting\nAliases: d, del, delete";
-const APPEND_LONG_ABOUT: &str = "Append some text to the end of a note\nWhen executed with the global flag this can append to notes from any context\nAliases: a, ap, append";
-const OPEN_LONG_ABOUT: &str = "Open a note\nWill open in the text editor defined in your config \nAliases: o, op, open";
-const READ_LONG_ABOUT: &str = "Read a note\nWill read using the command defined in your config \nAliases: r, re, rea, read";
+const CREATE_LONG_ABOUT: &str = "Create a new note\nAliases: c, cr, create";
+const DELETE_LONG_ABOUT: &str = "Delete a note\nWill ask for confirmation before deleting\nAliases: d, del, delete";
+const APPEND_LONG_ABOUT: &str = "Append some text to the end of a note\nAliases: a, ap, append";
+const OPEN_LONG_ABOUT: &str = "Open a note\nWill open in the text editor defined in your config\nAliases: o, op, open";
+const READ_LONG_ABOUT: &str = "Read a note\nWill read using the command defined in your config\nAliases: r, re, rea, read";
+const LIST_LONG_ABOUT: &str = "List all notes in the current context\nWill list notes based off command defined in your config\nAliases: l, ls, list";
 
 const STYLES: styling::Styles = styling::Styles::styled()
     .header(styling::AnsiColor::Yellow.on_default().bold())
@@ -84,7 +85,7 @@ pub enum Commands {
     },
 
     /// List all notes in the current context 
-    #[command(disable_help_flag=false, long_about=READ_LONG_ABOUT, aliases=["l", "ls"])]
+    #[command(disable_help_flag=false, long_about=LIST_LONG_ABOUT, aliases=["l", "ls"])]
     List {
     },
 }
