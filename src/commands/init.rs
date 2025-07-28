@@ -1,7 +1,7 @@
 use super::ICommand;
 use crate::util::cli::{CliEntry, Commands};
-use crate::commands::utils;
 use crate::models::config_serialize::ConfigObj;
+use crate::models::context;
 use std::env::current_dir;
 use std::path::PathBuf;
 use std::io::{ErrorKind, Error};
@@ -11,14 +11,13 @@ pub struct InitCommand {
 
 impl ICommand for InitCommand {
     fn execute(c_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Commands::Init { git, directory } = cli_obj.subcommand {
+        if let Some(Commands::Init { git, directory }) = cli_obj.subcommand {
             let mut directory = match directory {
                 Some(dir) => PathBuf::from(dir),
                 None => current_dir()?,
             };
             
             // if git flag is set then update directory to backtrack to nearest project,
-            // defaulting to global directory if none is found
             if git {
                 match InitCommand::backtrack_to_git_dir(&directory) {
                     Some(e) => { directory = e; },
@@ -26,7 +25,8 @@ impl ICommand for InitCommand {
                 }
             }
 
-            match utils::context_in_dir(&directory, false) {
+
+            match context::context_in_dir(&directory, false) {
                 true => { return Err(Error::new(ErrorKind::DirectoryNotEmpty, format!("{} already has context", directory.to_string_lossy()))); },
                 false => {
                     let mut tmp = directory.clone();
