@@ -25,10 +25,18 @@ fn main() {
     }
 
     let config = config.get_config();
+
     let result = match cli.subcommand {
-        Commands::Init { .. } => commands::init::InitCommand::execute(config, cli),
-        Commands::Create { .. } => commands::create::CreateCommand::execute(config, cli),
-        Commands::Append { .. } => commands::append::AppendCommand::execute(config, cli),
+        Some(Commands::Init { .. }) => commands::init::InitCommand::execute(config, cli),
+        Some(Commands::Create { .. }) => commands::create::CreateCommand::execute(config, cli),
+        Some(Commands::Append { .. }) => commands::append::AppendCommand::execute(config, cli),
+        Some(Commands::Open { .. }) => commands::open::OpenCommand::execute(config, cli),
+        Some(Commands::Delete { .. }) => commands::delete::DeleteCommand::execute(config, cli),
+        // default to open, eventually could be some type of dashboard
+        None => { 
+            let fake_cli = util::cli::CliEntry { subcommand: Some(Commands::Open { name: None })};
+            commands::open::OpenCommand::execute(config, fake_cli)
+        },
         _ => Ok(()),
     };
     
