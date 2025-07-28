@@ -9,10 +9,9 @@ const DEFAULT_CONFIG: &str = "\
 # nural.conf - default configuration file for Nural
 
 [general]
-global_dir = \"~/nural/global/\" 		# Directory for global context notes (will not generate this path)
 note_extension = \"md\"				# File extension to use for notes
-auto_create = true 					# Whether to create note files if they don’t exist when referenced
-editor = \"nvim\"						# Editor to use when opening notes (fallback to $EDITOR if unset)
+editor = \"nvim\"						# Editor to use when opening notes (vim, nvim, nano, etc)
+reader = \"batcat\"						# Reader to use when reading notes (cat, batcat, etc)
 update_gitignore = true                 # Automatically add .nural to the .gitignore if init is ran with -g
 
 [display]

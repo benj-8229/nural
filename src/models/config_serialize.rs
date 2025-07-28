@@ -8,10 +8,9 @@ pub struct ConfigObj {
 
 #[derive(Deserialize)]
 pub struct ConfigObjGeneral {
-   pub global_dir: String,
    pub note_extension: String,
-   pub auto_create: bool,
    pub editor: String,
+   pub reader: String,
    pub update_gitignore: bool,
 }
 

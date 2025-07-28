@@ -6,6 +6,7 @@ const CREATE_LONG_ABOUT: &str = "Create a new note\nWhen executed with the globa
 const DELETE_LONG_ABOUT: &str = "Delete a note\nWhen executed with the global flag this can delete notes from any context\nWill ask for confirmation before deleting\nAliases: d, del, delete";
 const APPEND_LONG_ABOUT: &str = "Append some text to the end of a note\nWhen executed with the global flag this can append to notes from any context\nAliases: a, ap, append";
 const OPEN_LONG_ABOUT: &str = "Open a note\nWill open in the text editor defined in your config \nAliases: o, op, open";
+const READ_LONG_ABOUT: &str = "Read a note\nWill read using the command defined in your config \nAliases: r, re, rea, read";
 
 const STYLES: styling::Styles = styling::Styles::styled()
     .header(styling::AnsiColor::Yellow.on_default().bold())
@@ -66,9 +67,17 @@ pub enum Commands {
         name: Option<String>,
     },
 
-    /// Open a note
+    /// Open a note in the editor
     #[command(disable_help_flag=false, long_about=OPEN_LONG_ABOUT, aliases=["o", "op"])]
     Open {
+        /// Search for note to open by name
+        #[arg(required=false)]
+        name: Option<String>,
+    },
+
+    /// Read a note 
+    #[command(disable_help_flag=false, long_about=READ_LONG_ABOUT, aliases=["r", "re", "rea"])]
+    Read {
         /// Search for note to open by name
         #[arg(required=false)]
         name: Option<String>,

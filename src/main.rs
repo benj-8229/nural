@@ -35,12 +35,12 @@ fn main() {
         Some(Commands::Append { .. }) => commands::append::AppendCommand::execute(config, cli),
         Some(Commands::Open { .. }) => commands::open::OpenCommand::execute(config, cli),
         Some(Commands::Delete { .. }) => commands::delete::DeleteCommand::execute(config, cli),
+        Some(Commands::Read { .. }) => commands::read::ReadCommand::execute(config, cli),
         // default to open, eventually could be some type of dashboard
         None => { 
             let fake_cli = util::cli::CliEntry { subcommand: Some(Commands::Open { name: None })};
             commands::open::OpenCommand::execute(config, fake_cli)
         },
-        _ => Ok(()),
     };
     
     match result {
