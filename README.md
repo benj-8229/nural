@@ -3,6 +3,7 @@
 
 **nural** is a fast, minimal, and context aware CLI note tool
 
+
 It's designed to deal with the common pain points of CLI note tools; fatigue remembering note names, cumbersome to use, and a cluttered global note store.
 With nural, notes are scoped to directories (called "contexts"), meaning you can only access notes in the context you're under. In addition, all commands will attempt to select notes by (in order of preference) searching for exact matches, searching for fuzzy matches, or opening a backup UI for manual selection.
 
