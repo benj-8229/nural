@@ -10,9 +10,9 @@ const DEFAULT_CONFIG: &str = "\
 
 [general]
 note_extension = \"md\"				# File extension to use for notes
-editor = \"nvim\"						# Editor to use when opening notes (vim, nvim, nano, etc)
-reader = \"batcat\"						# Reader to use when reading notes (cat, batcat, etc)
-lister = \"tree\"						# Command to use to list notes
+editor = \"nano\"						# Editor to use when opening notes (vim, nvim, nano, etc)
+reader = \"cat\"						# Reader to use when reading notes (cat, batcat, etc)
+lister = \"tree\"						# Command to use to list notes (will be removed eventually)
 update_gitignore = true                 # Automatically add .nural to the .gitignore if init is ran with -g
 
 [display]
