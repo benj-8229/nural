@@ -5,7 +5,7 @@
 
 
 nural is designed to deal with all the common pain points of CLI note tools; high cognitive load, cumbersome note access, and a cluttered note store.
-With nural, notes are scoped to directories (called "contexts"), meaning notes automatically are only viewable where they're relevant. In addition, all commands do their best to infer your intent, despite partial or even missing information.
+With nural, notes are scoped to directories (called "contexts"), meaning notes are only visible where they're relevant. In addition, all commands do their best to infer your intent, despite partial or even missing information.
 
 ![demo gif](https://raw.githubusercontent.com/benj-8229/nural/6a1574422f22337010a9c1add36fa21f4375867f/repo/demo.svg)
 
@@ -33,7 +33,7 @@ nural read
 All commands have aliases (visible in their help messages). This, in combination with partial note name parsing, lets you access notes with minimal input and thought. For example, the below command would append the example text to the end of the newly created todo note
 ```
 nural c todo
-nural a "Update readme for alpha release" do
+nural a "Update readme" to
 ```
 
 ## Installation
