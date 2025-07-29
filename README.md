@@ -1,9 +1,10 @@
 # nural
-![build](https://img.shields.io/crates/v/nural) ![language](https://img.shields.io/badge/language-Rust-orange) ![license](https://img.shields.io/github/license/benj-8229/nural) ![downloads](https://img.shields.io/crates/dv/nural)
+![build](https://img.shields.io/crates/v/nural) ![language](https://img.shields.io/badge/language-Rust-orange) ![license](https://img.shields.io/github/license/benj-8229/nural) ![downloads](https://img.shields.io/crates/d/nural)
 
-**nural** is a fast, minimal, context aware CLI note tool
+**nural** is a fast, minimal, and context aware CLI note tool
 
-It's designed to deal with the common pain points of CLI note tools; fatigue remembering note names, cumbersome to use, global note store.
+It's designed to deal with the common pain points of CLI note tools; fatigue remembering note names, cumbersome to use, and a cluttered global note store.
+With nural, notes are scoped to directories (called "contexts"), meaning you can only access notes in the context you're under. In addition, all commands will attempt to select notes by (in order of preference) searching for exact matches, searching for fuzzy matches, or opening a backup UI for manual selection.
 
 ![demo gif](https://raw.githubusercontent.com/benj-8229/nural/6a1574422f22337010a9c1add36fa21f4375867f/repo/demo.svg)
 
@@ -18,7 +19,7 @@ nural create todo
 nural append "example text" todo
 ```
 
-Nural can use partial note names. The below example will first check for a note named "to", and fall back to a fuzzy match. If there are multiple notes that match (e.g. "**to**do" and "s**to**res") it will open a search in the TUI where you can select a note by typing, using the arrow keys, and pressing enter.
+You can also use partial note names. The below example will first check for a note named "to", and fall back to a fuzzy match. If there are multiple notes that match (e.g. "**to**do" and "s**to**res") it will open a search in the TUI where you can select a note by typing, using the arrow keys, and pressing enter.
 ```
 nural open to
 ```
@@ -41,7 +42,7 @@ Currently, the only methods of installation are cargo or building the source you
 I'm planning to continue development and implement more features
 
 - Different storage modes (stored in project folder vs inside nural installation folder)
-- Metadata for notes to allow more intelligent CLI parsing, e.g commands automatically open MRU note
+- Metadata for notes to allow more intelligent CLI parsing, e.g commands automatically selecting the MRU note
 - Piping text into append command
 - Global flag to access a more traditional global note store
 
