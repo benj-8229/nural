@@ -5,6 +5,7 @@
 
 
 It's designed to deal with the common pain points of CLI note tools; fatigue remembering note names, cumbersome to use, and a cluttered global note store.
+
 With nural, notes are scoped to directories (called "contexts"), meaning you can only access notes in the context you're under. In addition, all commands will attempt to select notes by (in order of preference) searching for exact matches, searching for fuzzy matches, or opening a backup UI for manual selection.
 
 ![demo gif](https://raw.githubusercontent.com/benj-8229/nural/6a1574422f22337010a9c1add36fa21f4375867f/repo/demo.svg)
