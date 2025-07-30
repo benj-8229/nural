@@ -6,9 +6,6 @@ use util::config::Config;
 use util::cli::{parse_cli, Commands};
 use commands::ICommand;
 
-use std::time::Duration;
-use ratatui::crossterm::event::{read, poll};
-
 fn main() {
     let cli = parse_cli();
     
@@ -49,9 +46,5 @@ fn main() {
         Err(e) => { println!("{}", e.to_string()); },
     };
 
-    // flush stdin
-    while poll(Duration::from_millis(0)).unwrap_or(false) {
-        let _ = read(); // discard the event
-    }
-
+    crate::util::note_query::flush_stdin();
 }

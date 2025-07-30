@@ -16,8 +16,16 @@ use ratatui::{
     Frame, Terminal
 };
 
+pub fn flush_stdin()
+{
+    // flush stdin
+    while poll(Duration::from_millis(0)).unwrap_or(false) {
+        let _ = read(); // discard the event
+    }
+}
 
-pub fn score_options(options: Vec<PathBuf>, query: String, tags: Option<Vec<String>>) -> Vec<QueryResponse> {
+pub fn score_options(options: Vec<PathBuf>, query: String, tags: Option<Vec<String>>) -> Vec<QueryResponse>
+{
     let _tags = tags.unwrap_or(vec![String::from("")]);
     let mut results: Vec<QueryResponse> = Vec::new();
     let matcher = SkimMatcherV2::default();
@@ -41,7 +49,6 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
     //});
     
     // try and match directly to a note before falling back to fuzzy terminal
-
     let options = context.notes.into_iter().map(|note| note.path).collect::<Vec<PathBuf>>();
     let scores = score_options(options.clone(), input.clone(), None);
     if scores.len() == 1 {
@@ -64,10 +71,7 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
     let mut terminal = ratatui::init();
     let mut query = FZFQuery::new(input, options);
 
-    // flush stdin
-    while poll(Duration::from_millis(0)).unwrap_or(false) {
-        let _ = read(); // discard the event
-    }
+    flush_stdin();
 
     let result = query.run(&mut terminal);
     ratatui::restore();
@@ -76,7 +80,8 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
 }
 
 #[derive(Debug, Clone)]
-pub struct QueryResponse {
+pub struct QueryResponse 
+{
     pub path: PathBuf,
     pub filename: String,
     pub score: i64,
@@ -117,16 +122,12 @@ impl FZFQuery
             terminal.draw(|frame| self.draw(frame))?;
 
             if let Event::Key(key) = event::read()? {
-                if key.kind != KeyEventKind::Release {
+                if key.kind != KeyEventKind::Press {
                     continue; // ignore non-press events
                 }
 
                 match key.code {
                     KeyCode::Esc => {
-                        // flush stdin
-                        while poll(Duration::from_millis(0)).unwrap_or(false) {
-                            let _ = read(); // discard the event
-                        }
                         return Err(Error::new(std::io::ErrorKind::InvalidInput, "user canceled query"));
                     }
                     KeyCode::Enter => {
