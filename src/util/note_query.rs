@@ -8,7 +8,7 @@ use fuzzy_matcher::FuzzyMatcher;
 use ratatui::style::Stylize;
 use ratatui::{
     backend::Backend, 
-    crossterm::event::{self, Event, KeyCode, poll, read},
+    crossterm::event::{self, Event, KeyCode, KeyEventKind, poll, read},
     layout::{Constraint, Direction, Layout}, 
     style::{Color, Modifier, Style}, 
     text::{Line, Span, Text}, 
@@ -64,6 +64,11 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
     let mut terminal = ratatui::init();
     let mut query = FZFQuery::new(input, options);
 
+    // flush stdin
+    while poll(Duration::from_millis(0)).unwrap_or(false) {
+        let _ = read(); // discard the event
+    }
+
     let result = query.run(&mut terminal);
     ratatui::restore();
 
@@ -112,6 +117,10 @@ impl FZFQuery
             terminal.draw(|frame| self.draw(frame))?;
 
             if let Event::Key(key) = event::read()? {
+                if key.kind != KeyEventKind::Press {
+                    continue; // ignore non-press events
+                }
+                
                 match key.code {
                     KeyCode::Esc => {
                         // flush stdin
@@ -142,7 +151,7 @@ impl FZFQuery
                     }
                     KeyCode::Char(to_insert) => 
                     {
-                        self.input.push(to_insert);
+                            self.input.push(to_insert);
                     }
                     _ => {}
                 }
