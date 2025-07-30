@@ -1,6 +1,6 @@
 [package]
 name = "nural"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["Ben Smith <bensmith8229@gmail.com>"]
 description = "Fast, minimal, context aware CLI note tool"

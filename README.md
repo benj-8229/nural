@@ -50,9 +50,13 @@ nural is currently only tested on Linux. Expanding support to Windows and Mac is
 Following installation and a dry run of `nural` from the terminal to generate files, you can make some optional configuration tweaks (`~/.config/nural/nural.conf`)
 
 The `note_extension` setting lets you change your preferred note file extension, I would recommend leaving this default at .md.
+
 The `editor` setting is the command to be run to open notes. Default is `nano`.
+
 The `reader` setting is the command to be run to print notes to the terminal. Default is `cat`.
+
 The `lister` setting is the command to be run to print all available notes to the terminal. Default is `tree`.
+
 All other settings in the config are currently unimplemented.
 
 ## Future Plans
