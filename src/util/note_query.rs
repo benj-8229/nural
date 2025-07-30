@@ -117,10 +117,10 @@ impl FZFQuery
             terminal.draw(|frame| self.draw(frame))?;
 
             if let Event::Key(key) = event::read()? {
-                if key.kind != KeyEventKind::Press {
+                if key.kind != KeyEventKind::Release {
                     continue; // ignore non-press events
                 }
-                
+
                 match key.code {
                     KeyCode::Esc => {
                         // flush stdin
@@ -151,7 +151,7 @@ impl FZFQuery
                     }
                     KeyCode::Char(to_insert) => 
                     {
-                            self.input.push(to_insert);
+                        self.input.push(to_insert);
                     }
                     _ => {}
                 }
