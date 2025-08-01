@@ -2,7 +2,7 @@ use crate::models::config_serialize::ConfigObj;
 use directories::ProjectDirs;
 use std::{
     fs,
-    io::{Error, Result},
+    io::Result,
     path::PathBuf,
 };
 use toml;
