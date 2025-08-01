@@ -44,7 +44,7 @@ pub fn get_dir_context(dir: &PathBuf) -> Option<Context> {
     get_dir_context(&tmp)
 }
 
-pub fn expand_dir(dir: &str) -> String {
+pub fn _expand_dir(dir: &str) -> String {
     tilde(dir).to_string()
 }
 

@@ -44,10 +44,12 @@ Currently, the only methods of installation are cargo or building the source you
 3. (optional) add an alias for nural, e.g. `alias n=nural`
 
 ### Platforms
-nural is currently only tested on Linux. Expanding support to Windows and Mac is my number one priority and should be here soon.
+nural is currently primarily built and tested on Linux. Windows is supported, but at the moment requires additional configuration from the default Linux commands. In a future update the reader and lister commands will be replaced by built in functionality.
+
+You can run `nural config` to print the config location for your platform.
 
 ### Setup
-Following installation and a dry run of `nural` from the terminal to generate files, you can make some optional configuration tweaks (`~/.config/nural/nural.conf`)
+Following installation and a dry run of `nural` from the terminal to generate files, you can make some configuration tweaks.
 
 - The `note_extension` setting lets you change your preferred note file extension, I would recommend leaving this default at .md.
 - The `editor` setting is the command to be run to open notes. Default is `nano`.

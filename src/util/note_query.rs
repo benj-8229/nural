@@ -1,16 +1,16 @@
+use crate::models::note::Note;
 use crate::models::{context::Context};
-use std::time::Duration;
-use std::io::{self, BufRead, Error};
-use std::{path::PathBuf};
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
+use std::{
+    io::{Error}, 
+    time::Duration};
 
-use ratatui::style::Stylize;
 use ratatui::{
     backend::Backend, 
     crossterm::event::{self, Event, KeyCode, KeyEventKind, poll, read},
     layout::{Constraint, Direction, Layout}, 
-    style::{Color, Modifier, Style}, 
+    style::{Color, Modifier, Style, Stylize}, 
     text::{Line, Span, Text}, 
     widgets::{Block, Paragraph, Borders}, 
     Frame, Terminal
@@ -24,16 +24,15 @@ pub fn flush_stdin()
     }
 }
 
-pub fn score_options(options: Vec<PathBuf>, query: String, tags: Option<Vec<String>>) -> Vec<QueryResponse>
+pub fn score_options(options: Vec<Note>, query: String, tags: Option<Vec<String>>) -> Vec<QueryResponse>
 {
     let _tags = tags.unwrap_or(vec![String::from("")]);
     let mut results: Vec<QueryResponse> = Vec::new();
     let matcher = SkimMatcherV2::default();
 
     for option in options {
-        let name = option.file_name().expect("bad utf-8").to_str().unwrap();
-        if let Some((score, indices)) = matcher.fuzzy_indices(&name, &query) {
-            results.push(QueryResponse::new(option.clone(), String::from(name), score, indices));
+        if let Some((score, indices)) = matcher.fuzzy_indices(&option.name, &query) {
+            results.push(QueryResponse::new(option, score, indices));
         }
     }
 
@@ -49,13 +48,13 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
     //});
     
     // try and match directly to a note before falling back to fuzzy terminal
-    let options = context.notes.into_iter().map(|note| note.path).collect::<Vec<PathBuf>>();
+    let options = context.notes;
     let scores = score_options(options.clone(), input.clone(), None);
     if scores.len() == 1 {
         return Ok(scores[0].to_owned());
     }
     for result in &scores {
-        if result.filename == input {
+        if result.note.name == input {
             return Ok(result.clone());
         } 
     }
@@ -82,17 +81,15 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
 #[derive(Debug, Clone)]
 pub struct QueryResponse 
 {
-    pub path: PathBuf,
-    pub filename: String,
+    pub note: Note,
     pub score: i64,
     pub matching_indices: Vec<usize>,
 }
 
 impl QueryResponse {
-    fn new(path: PathBuf, name: String, score: i64, indices: Vec<usize>) -> Self {
+    fn new(note: Note, score: i64, indices: Vec<usize>) -> Self {
         Self {
-            path: path,
-            filename: name,
+            note: note,
             score: score,
             matching_indices: indices,
         }
@@ -102,13 +99,13 @@ impl QueryResponse {
 pub struct FZFQuery {
     input: String,
     selected: u8,
-    options: Vec<PathBuf>,
+    options: Vec<Note>,
     rankings: Vec<QueryResponse>,
 }
 
 impl FZFQuery
 {
-    fn new(inp: String, opt: Vec<PathBuf>) -> Self {
+    fn new(inp: String, opt: Vec<Note>) -> Self {
         Self {
             input: inp.clone(),
             selected: 0,
@@ -168,12 +165,12 @@ impl FZFQuery
         self.rankings = score_options(self.options.clone(), self.input.clone(), None);
         self.selected = self.selected.min((self.rankings.len() as u8).saturating_sub(1).max(0));
 
-        for (i, query) in self.rankings.iter().enumerate()
+        for (i, query_response) in self.rankings.iter().enumerate()
         {
-            if query.score > 0 || self.input.clone() == "" {
-                fzf_opts.push(query.filename.clone());
+            if query_response.score > 0 || self.input.clone() == "" {
+                fzf_opts.push(query_response.note.name.clone());
                 //styled_opts.insert(0 as usize, Line::styled(str, Style::default().bg(Color::LightRed)));
-                let mut line = highlight_matches_ascii(&query.filename, &query.matching_indices);
+                let mut line = highlight_matches_ascii(&query_response.note.name, &query_response.matching_indices);
                 if i == self.selected as usize {
                     line.style = Style::default().add_modifier(Modifier::REVERSED);
                 }
@@ -214,13 +211,12 @@ impl FZFQuery
         
         let mut file_lines: Vec<Line> = vec![];
         if self.rankings.len() > 0 {
-            match std::fs::File::open(self.rankings[self.selected as usize].path.clone()) {
-                Ok(file) => {
-                    let bufreader = io::BufReader::new(file).lines();
-                    for (i, line) in bufreader.enumerate() {
+            match self.rankings[self.selected as usize].note.try_get_lines() {
+                Some(lines) => {
+                    for (i, line) in lines.iter().enumerate() {
                         let padded_nums = format!("{: >3}", (i+1).to_string());
                         let lc_span = Span::from(padded_nums).style(Style::default().fg(Color::Gray));
-                        let letter_span = Span::from(line.unwrap_or(String::from("")));
+                        let letter_span = Span::from(line);
                         file_lines.push(Line::from(vec![lc_span, Span::from(" "), letter_span]));
                     }
                 }
@@ -234,6 +230,7 @@ impl FZFQuery
             file_lines = vec![Line::from(String::from(""))];
         }
         let preview_para = Paragraph::new(file_lines).block(Block::default().borders(Borders::ALL).title_top("File Preview").border_style(Style::default().light_yellow()));
+
         frame.render_widget(preview_para, file_area[0]);
     }
 }

@@ -16,14 +16,14 @@ impl ICommand for DeleteCommand {
             let context: Option<context::Context> = context::get_dir_context(&current_dir()?);
             let context = context.ok_or(Error::new(ErrorKind::NotFound, "context not found"))?;
 
-            let matched_note = note_query::query_tui(context, name.unwrap_or(String::from("")))?;
+            let query = note_query::query_tui(context, name.unwrap_or(String::from("")))?;
 
             let mut user_input: String = Default::default();
-            println!("Are you sure you want to delete {}? [y]es / [n]o: ", matched_note.filename);
+            println!("Are you sure you want to delete {}? [y]es / [n]o: ", query.note.name);
             io::stdin().read_line(&mut user_input)?;
 
             match user_input.to_lowercase().chars().nth(0) {
-                Some('y') => { return Ok(std::fs::remove_file(matched_note.path)?); },
+                Some('y') => { return Ok(std::fs::remove_file(query.note.path)?); },
                 _ => { println!("aborted delete"); },
             }
         }

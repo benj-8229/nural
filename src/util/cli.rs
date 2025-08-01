@@ -88,6 +88,11 @@ pub enum Commands {
     #[command(disable_help_flag=false, long_about=LIST_LONG_ABOUT, aliases=["l", "ls"])]
     List {
     },
+
+    /// Print config location for your platform
+    #[command(disable_help_flag=true)]
+    Config {
+    },
 }
 
 pub fn parse_cli() -> CliEntry {

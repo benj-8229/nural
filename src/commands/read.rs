@@ -18,10 +18,10 @@ impl ICommand for ReadCommand {
             let context: Option<context::Context> = context::get_dir_context(&current_dir()?);
             let context = context.ok_or(Error::new(ErrorKind::NotFound, "context not found"))?;
 
-            let matched_note = note_query::query_tui(context, name.unwrap_or(String::from("")))?;
+            let query_match = note_query::query_tui(context, name.unwrap_or(String::from("")))?;
 
             Command::new(reader)
-                .arg(matched_note.path.display().to_string())
+                .arg(query_match.note.path.display().to_string())
                 .stdin(Stdio::inherit())   // optional: pass input through too
                 .stdout(Stdio::inherit())  // <- stream output directly
                 .stderr(Stdio::inherit())  // <- stream errors too

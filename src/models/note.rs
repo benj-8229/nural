@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::io::{BufRead, BufReader, Error, ErrorKind};
 
+#[derive(Debug, Clone)]
 pub struct Note {
     pub name: String,
     pub path: PathBuf,

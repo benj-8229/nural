@@ -1,9 +1,11 @@
 use crate::models::config_serialize::ConfigObj;
 use std::{
-    fs, io::Result, path::PathBuf
+    io::{ Result, Error },
+    path::PathBuf,
+    fs, 
 };
+use directories::ProjectDirs;
 use toml;
-use shellexpand::tilde;
 
 const DEFAULT_CONFIG: &str = "\
 # nural.conf - default configuration file for Nural
@@ -20,29 +22,26 @@ show_full_paths = false				# Show full paths when listing notes
 show_timestamps = true				# Show creation and modification timestamps
 ";
 
-
 pub struct Config {
     pub path: PathBuf,
     pub dir: PathBuf,
 }
 
 impl Config {
-    /// Construct from a specific path
-    pub fn new<P: Into<PathBuf>>(path: P, dir: P) -> Self {
-        Config { 
-            path: path.into(),
-            dir: dir.into()
-        }
-    }
-
     /// Construct from default location
     pub fn default() -> Self {
-        let path = tilde("~/.config/nural/nural.conf").to_string();
-        let dir = tilde("~/.config/nural").to_string();
+        let proj_dirs = ProjectDirs::from("com", "yourname", "nural").unwrap();
+        let path = proj_dirs.config_dir().join("config.toml");
+        let dir = proj_dirs.config_dir();
         Config { 
             path: PathBuf::from(path),
             dir: PathBuf::from(dir),
         }
+    }
+
+    pub fn default_path() -> PathBuf {
+        let proj_dirs = ProjectDirs::from("com", "yourname", "nural").unwrap();
+        proj_dirs.config_dir().join("config.toml")
     }
 
     /// Check if config file exists
