@@ -19,7 +19,7 @@ impl ICommand for DeleteCommand {
 
             let mut user_input: String = Default::default();
             println!(
-                "Are you sure you want to delete {}? [y]es / [n]o: ",
+                "Are you sure you want to delete {}? y/[n]: ",
                 query.note.name
             );
             io::stdin().read_line(&mut user_input)?;
