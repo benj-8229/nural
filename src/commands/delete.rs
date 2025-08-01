@@ -1,14 +1,13 @@
 use super::ICommand;
-use std::io::{self, ErrorKind};
-use crate::util::cli::{CliEntry, Commands};
 use crate::models::{config_serialize::ConfigObj, context};
+use crate::util::cli::{CliEntry, Commands};
 use crate::util::note_query;
+use std::io::{self, ErrorKind};
 
 use std::env::current_dir;
-use std::io::{Error};
+use std::io::Error;
 
-pub struct DeleteCommand {
-}
+pub struct DeleteCommand {}
 
 impl ICommand for DeleteCommand {
     fn execute(_conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
@@ -19,12 +18,19 @@ impl ICommand for DeleteCommand {
             let query = note_query::query_tui(context, name.unwrap_or(String::from("")))?;
 
             let mut user_input: String = Default::default();
-            println!("Are you sure you want to delete {}? [y]es / [n]o: ", query.note.name);
+            println!(
+                "Are you sure you want to delete {}? [y]es / [n]o: ",
+                query.note.name
+            );
             io::stdin().read_line(&mut user_input)?;
 
             match user_input.to_lowercase().chars().nth(0) {
-                Some('y') => { return Ok(std::fs::remove_file(query.note.path)?); },
-                _ => { println!("aborted delete"); },
+                Some('y') => {
+                    return Ok(std::fs::remove_file(query.note.path)?);
+                }
+                _ => {
+                    println!("aborted delete");
+                }
             }
         }
 

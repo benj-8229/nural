@@ -1,15 +1,14 @@
 use super::ICommand;
-use std::io::ErrorKind;
-use crate::util::cli::{CliEntry, Commands};
 use crate::models::{config_serialize::ConfigObj, context};
+use crate::util::cli::{CliEntry, Commands};
 use crate::util::note_query;
+use std::io::ErrorKind;
 
-use std::process::{Command, Stdio};
 use std::env::current_dir;
-use std::io::{Error};
+use std::io::Error;
+use std::process::{Command, Stdio};
 
-pub struct ReadCommand {
-}
+pub struct ReadCommand {}
 
 impl ICommand for ReadCommand {
     fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
@@ -22,14 +21,13 @@ impl ICommand for ReadCommand {
 
             Command::new(reader)
                 .arg(query_match.note.path.display().to_string())
-                .stdin(Stdio::inherit())   // optional: pass input through too
-                .stdout(Stdio::inherit())  // <- stream output directly
-                .stderr(Stdio::inherit())  // <- stream errors too
+                .stdin(Stdio::inherit()) // optional: pass input through too
+                .stdout(Stdio::inherit()) // <- stream output directly
+                .stderr(Stdio::inherit()) // <- stream errors too
                 .spawn()?
-                .wait()?;  // wait for process to finish
+                .wait()?; // wait for process to finish
         }
 
         Ok(())
     }
 }
-

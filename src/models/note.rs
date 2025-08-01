@@ -1,11 +1,11 @@
-use std::path::PathBuf;
 use std::io::{BufRead, BufReader, Error, ErrorKind};
+use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
 pub struct Note {
     pub name: String,
     pub path: PathBuf,
-    pub lines: Option<Vec<String>>
+    pub lines: Option<Vec<String>>,
 }
 
 impl Note {
@@ -29,9 +29,10 @@ impl Note {
                 self.lines = Some(file_lines);
                 Ok(&self.lines.as_ref().unwrap())
             }
-            _ => {
-                Err(Error::new(ErrorKind::NotFound, format!("failed to open note {}", self.name)))
-            }
+            _ => Err(Error::new(
+                ErrorKind::NotFound,
+                format!("failed to open note {}", self.name),
+            )),
         }
     }
 

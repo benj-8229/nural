@@ -1,7 +1,6 @@
 use crate::models::note::Note;
-use std::{fs, path::PathBuf};
 use shellexpand::tilde;
-
+use std::{fs, path::PathBuf};
 
 pub fn context_in_dir(dir: &PathBuf, recurse: bool) -> bool {
     let mut tmp = dir.clone();
@@ -51,21 +50,24 @@ pub fn _expand_dir(dir: &str) -> String {
 pub struct Context {
     pub dir: PathBuf,
     pub notes: Vec<Note>,
-
 }
 
 impl Context {
     fn new(dir: PathBuf) -> Self {
         let files = fs::read_dir(&dir).unwrap();
-        let file_list: Vec<PathBuf> = files.map(|file| file.unwrap().path()).collect::<Vec<PathBuf>>();
-        let notes: Vec<Note> = file_list.into_iter()
-            .map(|path| Note::from(String::from(path.file_stem().unwrap().to_string_lossy()), path))
+        let file_list: Vec<PathBuf> = files
+            .map(|file| file.unwrap().path())
+            .collect::<Vec<PathBuf>>();
+        let notes: Vec<Note> = file_list
+            .into_iter()
+            .map(|path| {
+                Note::from(
+                    String::from(path.file_stem().unwrap().to_string_lossy()),
+                    path,
+                )
+            })
             .collect::<Vec<Note>>();
 
-
-        Context {
-            dir,
-            notes,
-        }
+        Context { dir, notes }
     }
 }

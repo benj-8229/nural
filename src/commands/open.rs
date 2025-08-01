@@ -1,15 +1,14 @@
 use super::ICommand;
-use std::io::ErrorKind;
-use crate::util::cli::{CliEntry, Commands};
 use crate::models::{config_serialize::ConfigObj, context};
+use crate::util::cli::{CliEntry, Commands};
 use crate::util::note_query;
+use std::io::ErrorKind;
 
-use std::process::Command;
 use std::env::current_dir;
-use std::io::{Error};
+use std::io::Error;
+use std::process::Command;
 
-pub struct OpenCommand {
-}
+pub struct OpenCommand {}
 
 impl ICommand for OpenCommand {
     fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {

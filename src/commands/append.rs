@@ -1,14 +1,13 @@
 use super::ICommand;
-use std::io::ErrorKind;
-use crate::util::cli::{CliEntry, Commands};
 use crate::models::{config_serialize::ConfigObj, context};
+use crate::util::cli::{CliEntry, Commands};
 use crate::util::note_query;
+use std::io::ErrorKind;
 
 use std::env::current_dir;
 use std::io::{Error, Write};
 
-pub struct AppendCommand {
-}
+pub struct AppendCommand {}
 
 impl ICommand for AppendCommand {
     fn execute(_conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
@@ -28,4 +27,3 @@ impl ICommand for AppendCommand {
         Ok(())
     }
 }
-

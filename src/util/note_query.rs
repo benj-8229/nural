@@ -1,31 +1,31 @@
+use crate::models::context::Context;
 use crate::models::note::Note;
-use crate::models::{context::Context};
-use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
-use std::{
-    io::{Error}, 
-    time::Duration};
+use fuzzy_matcher::skim::SkimMatcherV2;
+use std::{io::Error, time::Duration};
 
 use ratatui::{
-    backend::Backend, 
+    Frame, Terminal,
+    backend::Backend,
     crossterm::event::{self, Event, KeyCode, KeyEventKind, poll, read},
-    layout::{Constraint, Direction, Layout}, 
-    style::{Color, Modifier, Style, Stylize}, 
-    text::{Line, Span, Text}, 
-    widgets::{Block, Paragraph, Borders}, 
-    Frame, Terminal
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style, Stylize},
+    text::{Line, Span, Text},
+    widgets::{Block, Borders, Paragraph},
 };
 
-pub fn flush_stdin()
-{
+pub fn flush_stdin() {
     // flush stdin
     while poll(Duration::from_millis(0)).unwrap_or(false) {
         let _ = read(); // discard the event
     }
 }
 
-pub fn score_options(options: Vec<Note>, query: String, tags: Option<Vec<String>>) -> Vec<QueryResponse>
-{
+pub fn score_options(
+    options: Vec<Note>,
+    query: String,
+    tags: Option<Vec<String>>,
+) -> Vec<QueryResponse> {
     let _tags = tags.unwrap_or(vec![String::from("")]);
     let mut results: Vec<QueryResponse> = Vec::new();
     let matcher = SkimMatcherV2::default();
@@ -40,13 +40,12 @@ pub fn score_options(options: Vec<Note>, query: String, tags: Option<Vec<String>
     results
 }
 
-pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::io::Error>
-{
-    // would be cool to have inline frame but it doesn't seem like it can be cleaned up 
+pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::io::Error> {
+    // would be cool to have inline frame but it doesn't seem like it can be cleaned up
     //let mut terminal = ratatui::init_with_options(TerminalOptions {
     //    viewport: Viewport::Inline(options.len() as u16),
     //});
-    
+
     // try and match directly to a note before falling back to fuzzy terminal
     let options = context.notes;
     let scores = score_options(options.clone(), input.clone(), None);
@@ -56,10 +55,11 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
     for result in &scores {
         if result.note.name == input {
             return Ok(result.clone());
-        } 
+        }
     }
 
-    let filtered_scores = scores.iter()
+    let filtered_scores = scores
+        .iter()
         .filter(|response| response.score > 0)
         .map(|response| response.to_owned())
         .collect::<Vec<QueryResponse>>();
@@ -79,8 +79,7 @@ pub fn query_tui(context: Context, input: String) -> Result<QueryResponse, std::
 }
 
 #[derive(Debug, Clone)]
-pub struct QueryResponse 
-{
+pub struct QueryResponse {
     pub note: Note,
     pub score: i64,
     pub matching_indices: Vec<usize>,
@@ -103,8 +102,7 @@ pub struct FZFQuery {
     rankings: Vec<QueryResponse>,
 }
 
-impl FZFQuery
-{
+impl FZFQuery {
     fn new(inp: String, opt: Vec<Note>) -> Self {
         Self {
             input: inp.clone(),
@@ -114,7 +112,10 @@ impl FZFQuery
         }
     }
 
-    pub fn run(&mut self, terminal: &mut Terminal<impl Backend>) -> Result<QueryResponse, std::io::Error> {
+    pub fn run(
+        &mut self,
+        terminal: &mut Terminal<impl Backend>,
+    ) -> Result<QueryResponse, std::io::Error> {
         loop {
             terminal.draw(|frame| self.draw(frame))?;
 
@@ -125,11 +126,17 @@ impl FZFQuery
 
                 match key.code {
                     KeyCode::Esc => {
-                        return Err(Error::new(std::io::ErrorKind::InvalidInput, "user canceled query"));
+                        return Err(Error::new(
+                            std::io::ErrorKind::InvalidInput,
+                            "user canceled query",
+                        ));
                     }
                     KeyCode::Enter => {
                         if self.rankings.len() as i8 == 0 {
-                            return Err(Error::new(std::io::ErrorKind::InvalidInput, "no valid options"));
+                            return Err(Error::new(
+                                std::io::ErrorKind::InvalidInput,
+                                "no valid options",
+                            ));
                         }
                         return Ok(self.rankings[self.selected as usize].clone());
                     }
@@ -147,8 +154,7 @@ impl FZFQuery
                             self.input.pop();
                         }
                     }
-                    KeyCode::Char(to_insert) => 
-                    {
+                    KeyCode::Char(to_insert) => {
                         self.input.push(to_insert);
                     }
                     _ => {}
@@ -157,20 +163,23 @@ impl FZFQuery
         }
     }
 
-    pub fn draw(&mut self, frame: &mut Frame)
-    {
+    pub fn draw(&mut self, frame: &mut Frame) {
         // run fuzzy matching and layout generation first so we can determine spacing
         let mut fzf_opts: Vec<String> = vec![];
         let mut styled_opts: Vec<Line<'static>> = vec![];
         self.rankings = score_options(self.options.clone(), self.input.clone(), None);
-        self.selected = self.selected.min((self.rankings.len() as u8).saturating_sub(1).max(0));
+        self.selected = self
+            .selected
+            .min((self.rankings.len() as u8).saturating_sub(1).max(0));
 
-        for (i, query_response) in self.rankings.iter().enumerate()
-        {
+        for (i, query_response) in self.rankings.iter().enumerate() {
             if query_response.score > 0 || self.input.clone() == "" {
                 fzf_opts.push(query_response.note.name.clone());
                 //styled_opts.insert(0 as usize, Line::styled(str, Style::default().bg(Color::LightRed)));
-                let mut line = highlight_matches_ascii(&query_response.note.name, &query_response.matching_indices);
+                let mut line = highlight_matches_ascii(
+                    &query_response.note.name,
+                    &query_response.matching_indices,
+                );
                 if i == self.selected as usize {
                     line.style = Style::default().add_modifier(Modifier::REVERSED);
                 }
@@ -179,22 +188,23 @@ impl FZFQuery
         }
 
         let area = frame.area();
-        let area_split = Layout::default().direction(Direction::Horizontal)
+        let area_split = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([Constraint::Min(0), Constraint::Percentage(65)])
+            .split(area);
+        let file_area = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Min(0)])
+            .split(area_split[1]);
+        let chunks = Layout::default()
+            .direction(Direction::Vertical)
             .constraints([
                 Constraint::Min(0),
-                Constraint::Percentage(65)
-            ]).split(area);
-        let file_area = Layout::default().direction(Direction::Vertical)
-            .constraints([
-                Constraint::Min(0),
-            ]).split(area_split[1]);
-        let chunks = Layout::default().direction(Direction::Vertical)
-            .constraints([
-                Constraint::Min(0),         
                 Constraint::Length(styled_opts.len() as u16 + 2),
-                Constraint::Length(3),      // bottom line for input
-            ]).split(area_split[0]);
-        
+                Constraint::Length(3), // bottom line for input
+            ])
+            .split(area_split[0]);
+
         // One line made of styled spans
         let line = Line::from(vec![
             Span::styled("> ", Style::default().fg(Color::Red)),
@@ -202,20 +212,30 @@ impl FZFQuery
         ]);
 
         let text = Text::from(line); // Text from one Line
-        let para = Paragraph::new(text).block(Block::default().borders(Borders::ALL).border_style(Style::default().light_yellow()));
+        let para = Paragraph::new(text).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_style(Style::default().light_yellow()),
+        );
         frame.render_widget(para, chunks[2]);
 
         let opt_lines = Text::from(styled_opts);
-        let opt_paragraph = Paragraph::new(opt_lines).block(Block::default().borders(Borders::ALL).title_top("Matched Notes").border_style(Style::default().light_yellow()));
+        let opt_paragraph = Paragraph::new(opt_lines).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title_top("Matched Notes")
+                .border_style(Style::default().light_yellow()),
+        );
         frame.render_widget(opt_paragraph, chunks[1]);
-        
+
         let mut file_lines: Vec<Line> = vec![];
         if self.rankings.len() > 0 {
             match self.rankings[self.selected as usize].note.try_get_lines() {
                 Some(lines) => {
                     for (i, line) in lines.iter().enumerate() {
-                        let padded_nums = format!("{: >3}", (i+1).to_string());
-                        let lc_span = Span::from(padded_nums).style(Style::default().fg(Color::Gray));
+                        let padded_nums = format!("{: >3}", (i + 1).to_string());
+                        let lc_span =
+                            Span::from(padded_nums).style(Style::default().fg(Color::Gray));
                         let letter_span = Span::from(line);
                         file_lines.push(Line::from(vec![lc_span, Span::from(" "), letter_span]));
                     }
@@ -224,12 +244,15 @@ impl FZFQuery
                     file_lines = vec![Line::from(String::from("no preview available"))];
                 }
             }
-        }
-        else
-        {
+        } else {
             file_lines = vec![Line::from(String::from(""))];
         }
-        let preview_para = Paragraph::new(file_lines).block(Block::default().borders(Borders::ALL).title_top("File Preview").border_style(Style::default().light_yellow()));
+        let preview_para = Paragraph::new(file_lines).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title_top("File Preview")
+                .border_style(Style::default().light_yellow()),
+        );
 
         frame.render_widget(preview_para, file_area[0]);
     }
@@ -240,7 +263,9 @@ fn highlight_matches_ascii(line: &str, matches: &[usize]) -> Line<'static> {
 
     for (i, ch) in line.chars().enumerate() {
         let style = if matches.contains(&i) {
-            Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)
+            Style::default()
+                .fg(Color::LightRed)
+                .add_modifier(Modifier::BOLD)
         } else {
             Style::default().fg(Color::White)
         };
@@ -250,4 +275,3 @@ fn highlight_matches_ascii(line: &str, matches: &[usize]) -> Line<'static> {
 
     Line::from(spans)
 }
-

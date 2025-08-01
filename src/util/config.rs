@@ -1,10 +1,10 @@
 use crate::models::config_serialize::ConfigObj;
-use std::{
-    io::{ Result, Error },
-    path::PathBuf,
-    fs, 
-};
 use directories::ProjectDirs;
+use std::{
+    fs,
+    io::{Error, Result},
+    path::PathBuf,
+};
 use toml;
 
 const DEFAULT_CONFIG: &str = "\
@@ -33,7 +33,7 @@ impl Config {
         let proj_dirs = ProjectDirs::from("com", "yourname", "nural").unwrap();
         let path = proj_dirs.config_dir().join("config.toml");
         let dir = proj_dirs.config_dir();
-        Config { 
+        Config {
             path: PathBuf::from(path),
             dir: PathBuf::from(dir),
         }

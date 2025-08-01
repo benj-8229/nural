@@ -1,13 +1,12 @@
 use super::ICommand;
-use crate::util::cli::{CliEntry, Commands};
 use crate::models::config_serialize::ConfigObj;
 use crate::models::context;
+use crate::util::cli::{CliEntry, Commands};
 use std::env::current_dir;
+use std::io::{Error, ErrorKind};
 use std::path::PathBuf;
-use std::io::{ErrorKind, Error};
 
-pub struct InitCommand {
-}
+pub struct InitCommand {}
 
 impl ICommand for InitCommand {
     fn execute(c_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
@@ -16,18 +15,32 @@ impl ICommand for InitCommand {
                 Some(dir) => PathBuf::from(dir),
                 None => current_dir()?,
             };
-            
+
             // if git flag is set then update directory to backtrack to nearest project,
             if git {
                 match InitCommand::backtrack_to_git_dir(&directory) {
-                    Some(e) => { directory = e; },
-                    None => { return Err(Error::new(ErrorKind::NotFound, format!("could not find .git directory from {}", directory.to_string_lossy()))); }, // git flag + no .git = error
+                    Some(e) => {
+                        directory = e;
+                    }
+                    None => {
+                        return Err(Error::new(
+                            ErrorKind::NotFound,
+                            format!(
+                                "could not find .git directory from {}",
+                                directory.to_string_lossy()
+                            ),
+                        ));
+                    } // git flag + no .git = error
                 }
             }
 
-
             match context::context_in_dir(&directory, false) {
-                true => { return Err(Error::new(ErrorKind::DirectoryNotEmpty, format!("{} already has context", directory.to_string_lossy()))); },
+                true => {
+                    return Err(Error::new(
+                        ErrorKind::DirectoryNotEmpty,
+                        format!("{} already has context", directory.to_string_lossy()),
+                    ));
+                }
                 false => {
                     let mut tmp = directory.clone();
                     tmp.push(".nural");
@@ -40,7 +53,7 @@ impl ICommand for InitCommand {
             }
         }
         Ok(())
-    } 
+    }
 }
 
 impl InitCommand {
@@ -53,7 +66,10 @@ impl InitCommand {
         let mut tmp_path = cur_dir.clone();
         tmp_path.push(".git");
 
-        if tmp_path.try_exists().expect("failed to check directory existence") {
+        if tmp_path
+            .try_exists()
+            .expect("failed to check directory existence")
+        {
             return Some(cur_dir.into());
         }
 
