@@ -7,8 +7,6 @@ use util::cli::{Commands, parse_cli};
 use util::config::Config;
 
 fn main() {
-    let cli = parse_cli();
-
     // Auto generate config directory and config file if it doesn't exist
     let config = Config::default();
     if !config.dir_exists() {
@@ -30,7 +28,8 @@ fn main() {
         }
     }
 
-    let config = config.get_config();
+    let cli = &parse_cli();
+    let config = &config.get_config();
 
     let result = match cli.subcommand {
         Some(Commands::Init { .. }) => commands::init::InitCommand::execute(config, cli),
@@ -46,10 +45,8 @@ fn main() {
         }
         // default to open, eventually could be some type of dashboard
         None => {
-            let fake_cli = util::cli::CliEntry {
-                subcommand: Some(Commands::Open { name: None }),
-            };
-            commands::open::OpenCommand::execute(config, fake_cli)
+            let fake_cli = util::cli::CliEntry { subcommand: Some(Commands::Open { name: None }) };
+            commands::open::OpenCommand::execute(config, &fake_cli)
         }
     };
 
@@ -61,6 +58,4 @@ fn main() {
             println!("{}", e.to_string());
         }
     };
-
-    crate::util::note_query::flush_stdin();
 }

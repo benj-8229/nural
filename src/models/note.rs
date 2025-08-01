@@ -37,7 +37,7 @@ impl Note {
     }
 
     pub fn try_get_lines(&mut self) -> Option<&Vec<String>> {
-        if self.lines == None {
+        if self.lines.is_none() {
             match self.read_contents() {
                 Ok(lines) => return Some(lines),
                 Err(_) => return None,

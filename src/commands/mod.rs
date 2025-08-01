@@ -10,5 +10,5 @@ pub mod open;
 pub mod read;
 
 pub trait ICommand {
-    fn execute(config_obj: ConfigObj, cli_obj: CliEntry) -> std::io::Result<()>;
+    fn execute(config_obj: &ConfigObj, cli_obj: &CliEntry) -> std::io::Result<()>;
 }
