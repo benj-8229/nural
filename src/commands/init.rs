@@ -9,15 +9,15 @@ use std::path::PathBuf;
 pub struct InitCommand {}
 
 impl ICommand for InitCommand {
-    fn execute(c_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Some(Commands::Init { git, directory }) = cli_obj.subcommand {
+    fn execute(c_obj: &ConfigObj, cli_obj: &CliEntry) -> Result<(), Error> {
+        if let Some(Commands::Init { git, directory }) = &cli_obj.subcommand {
             let mut directory = match directory {
                 Some(dir) => PathBuf::from(dir),
                 None => current_dir()?,
             };
 
             // if git flag is set then update directory to backtrack to nearest project,
-            if git {
+            if *git {
                 match InitCommand::backtrack_to_git_dir(&directory) {
                     Some(e) => {
                         directory = e;

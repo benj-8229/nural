@@ -10,9 +10,9 @@ use std::process::{Command, Stdio};
 pub struct ListCommand {}
 
 impl ICommand for ListCommand {
-    fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Some(Commands::List {}) = cli_obj.subcommand {
-            let lister: String = conf_obj.general.lister;
+    fn execute(conf_obj: &ConfigObj, cli_obj: &CliEntry) -> Result<(), Error> {
+        if let Some(Commands::List {}) = &cli_obj.subcommand {
+            let lister: String = conf_obj.general.lister.to_owned();
             let context: Option<context::Context> = context::get_dir_context(&current_dir()?);
             let context = context.ok_or(Error::new(ErrorKind::NotFound, "context not found"))?;
 

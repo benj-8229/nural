@@ -11,13 +11,13 @@ use std::process::{Command, Stdio};
 pub struct ReadCommand {}
 
 impl ICommand for ReadCommand {
-    fn execute(conf_obj: ConfigObj, cli_obj: CliEntry) -> Result<(), Error> {
-        if let Some(Commands::Read { name }) = cli_obj.subcommand {
-            let reader: String = conf_obj.general.reader;
+    fn execute(conf_obj: &ConfigObj, cli_obj: &CliEntry) -> Result<(), Error> {
+        if let Some(Commands::Read { name }) = &cli_obj.subcommand {
+            let reader: String = conf_obj.general.reader.to_owned();
             let context: Option<context::Context> = context::get_dir_context(&current_dir()?);
             let context = context.ok_or(Error::new(ErrorKind::NotFound, "context not found"))?;
 
-            let query_match = note_query::query_tui(context, name.unwrap_or(String::from("")))?;
+            let query_match = note_query::query_tui(context, name.to_owned().unwrap_or(String::from("")))?;
 
             Command::new(reader)
                 .arg(query_match.note.path.display().to_string())
