@@ -73,7 +73,4 @@ impl Config {
             Err(_) => panic!("failed to read config"),
         }
     }
-
-    // Maybe: parse config contents (if using TOML, etc.)
-    // pub fn load(&self) -> Result<MyParsedConfig, ...>
 }
